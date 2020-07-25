@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"restaurant-supplier-api/config"
+	"restaurant-supplier-api/httpd/mainPageHandler"
 )
 
 func main() {
@@ -13,7 +14,10 @@ func main() {
 
 	var mongoUri = config.GetMongoUrl()
 	fmt.Println(mongoUri)
+
 	router := mux.NewRouter()
+
+	router.HandleFunc("/", mainPageHandler.Info).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":3000", router))
 }

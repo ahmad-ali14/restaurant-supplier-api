@@ -1,6 +1,6 @@
 # restaurant-supplier-api
 
-## Env Files 
+## Env Files
 
 - make a `./config/config.go` file
 - put this code in that file:
@@ -9,7 +9,7 @@
         package config
 
         func GetMongoUrl() string {
-          return "<your mongodn connection string>"
+          return "<your mongodb connection string>"
         }
-        
+
   ```
