@@ -1,11 +1,11 @@
-package restaurant
+package supplier
 
-type Restaurant struct {
+type Supplier struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Address string `json:"address"`
 }
 
-type RestaurantList struct {
-	Restaurants []Restaurant
+type SupplierList struct {
+	Suppliers []Supplier
 }
