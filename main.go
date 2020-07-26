@@ -2,7 +2,7 @@ package main
 
 import (
 	// "context"
-	// "fmt"
+	"fmt"
 	"github.com/gorilla/mux"
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
@@ -10,15 +10,43 @@ import (
 	"log"
 	"net/http"
 	// "restaurant-supplier-api/config"
+	"restaurant-supplier-api/httpd/auth"
 	"restaurant-supplier-api/httpd/mainPageHandler"
 	"restaurant-supplier-api/httpd/orderHandler"
 	"restaurant-supplier-api/httpd/restaurantHandler"
 	"restaurant-supplier-api/httpd/supplierHandler"
 	// "restaurant-supplier-api/utils/dbHandler"
+	jwt "github.com/dgrijalva/jwt-go"
 	// "time"
 )
 
-// client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
+var mySigningKey = []byte("captainjacksparrowsayshi")
+
+func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Header["Token"] != nil {
+
+			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("There was an error")
+				}
+				return mySigningKey, nil
+			})
+
+			if err != nil {
+				fmt.Fprintf(w, err.Error())
+			}
+
+			if token.Valid {
+				endpoint(w, r)
+			}
+		} else {
+
+			fmt.Fprintf(w, "Not Authorized")
+		}
+	})
+}
 
 func main() {
 
@@ -33,14 +61,14 @@ func main() {
 	var orderRouter = router.PathPrefix("/order").Subrouter()
 
 	// handler funcs
-	router.HandleFunc("/", mainPageHandler.Info).Methods("GET")
+	router.Handle("/", isAuthorized(mainPageHandler.Info)).Methods("GET")
+	router.HandleFunc("/login", auth.Login).Methods("POST")
 
 	// retaurant sub router funcs
 	router.Handle("/", restaurantRouter)
 	restaurantRouter.HandleFunc("/", restaurantHandler.Info).Methods("GET")
 	restaurantRouter.HandleFunc("/all", restaurantHandler.GetRestaurants).Methods("GET")
 	restaurantRouter.HandleFunc("/new", restaurantHandler.CreateRestaurant).Methods("POST")
-
 
 	// supplier sub router funcs
 	router.Handle("/", supplierRouter)
@@ -51,5 +79,5 @@ func main() {
 	orderRouter.HandleFunc("/", orderHandler.Info).Methods("GET")
 
 	// run the server
-	log.Fatal(http.ListenAndServe(":3000", router))
+	log.Fatal(http.ListenAndServe(":5000", router))
 }
