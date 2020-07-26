@@ -1,7 +1,12 @@
 package main
 
 import (
+	// "context"
+	// "fmt"
 	"github.com/gorilla/mux"
+	// "go.mongodb.org/mongo-driver/mongo"
+	// "go.mongodb.org/mongo-driver/mongo/options"
+	// "go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
 	"net/http"
 	// "restaurant-supplier-api/config"
@@ -9,12 +14,17 @@ import (
 	"restaurant-supplier-api/httpd/orderHandler"
 	"restaurant-supplier-api/httpd/restaurantHandler"
 	"restaurant-supplier-api/httpd/supplierHandler"
+	// "restaurant-supplier-api/utils/dbHandler"
+	// "time"
 )
+
+// client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 
 func main() {
 
-	// mongo conncetion string
-	// var mongoURI = config.GetMongoUrl()
+	// cl := dbHandler.CreateConnection()
+	//fmt.Println(mongoURI, &collection)
+	// fmt.Printf("client is %s", cl)
 
 	// init router and sub routers
 	var router = mux.NewRouter()
@@ -28,6 +38,9 @@ func main() {
 	// retaurant sub router funcs
 	router.Handle("/", restaurantRouter)
 	restaurantRouter.HandleFunc("/", restaurantHandler.Info).Methods("GET")
+	restaurantRouter.HandleFunc("/all", restaurantHandler.GetRestaurants).Methods("GET")
+	restaurantRouter.HandleFunc("/new", restaurantHandler.CreateRestaurant).Methods("POST")
+
 
 	// supplier sub router funcs
 	router.Handle("/", supplierRouter)
