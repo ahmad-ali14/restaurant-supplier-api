@@ -17,7 +17,9 @@ import (
 	"restaurant-supplier-api/httpd/supplierHandler"
 	// "restaurant-supplier-api/utils/dbHandler"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/handlers"
 	// "time"
+	"os"
 )
 
 var mySigningKey = []byte("captainjacksparrowsayshi")
@@ -60,14 +62,20 @@ func main() {
 	var supplierRouter = router.PathPrefix("/supplier").Subrouter()
 	var orderRouter = router.PathPrefix("/order").Subrouter()
 
+	// cors
+	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Token"})
+	originsOk := handlers.AllowedOrigins([]string{"*", "http://localhost:3000"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	// handler funcs
-	router.Handle("/", isAuthorized(mainPageHandler.Info)).Methods("GET")
+	router.HandleFunc("/", mainPageHandler.Info).Methods("GET")
 	router.HandleFunc("/login", auth.Login).Methods("POST")
 
 	// retaurant sub router funcs
 	router.Handle("/", restaurantRouter)
 	restaurantRouter.HandleFunc("/", restaurantHandler.Info).Methods("GET")
-	restaurantRouter.HandleFunc("/all", restaurantHandler.GetRestaurants).Methods("GET")
+	restaurantRouter.Handle("/all", isAuthorized(restaurantHandler.GetAllRestaurants)).Methods("GET", "OPTIONS")
 	restaurantRouter.HandleFunc("/new", restaurantHandler.CreateRestaurant).Methods("POST")
 
 	// supplier sub router funcs
@@ -79,5 +87,10 @@ func main() {
 	orderRouter.HandleFunc("/", orderHandler.Info).Methods("GET")
 
 	// run the server
-	log.Fatal(http.ListenAndServe(":5000", router))
+	var port string = "5000"
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+
+	log.Fatal(http.ListenAndServe(":"+port, handlers.CORS(originsOk, headersOk, methodsOk)(router)))
 }
