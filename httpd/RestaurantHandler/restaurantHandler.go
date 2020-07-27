@@ -72,9 +72,11 @@ func GetAllRestaurants(res http.ResponseWriter, req *http.Request) {
 func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 	enCors.EnableCors(res)
 
-	var elem restaurant.Restaurant
 	var newUser user.User
 	var existedUser interface{}
+	var elem restaurant.RawRestaurant
+	var restaurantToInsert restaurant.Restaurant
+
 	_ = json.NewDecoder(req.Body).Decode(&elem)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
@@ -87,18 +89,27 @@ func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 
 		log.Println(elem)
 
-		result, _ := restaurantsColl.InsertOne(ctx, elem)
+		restaurantToInsert.ID = elem.ID
+		restaurantToInsert.Name = elem.Name
+		restaurantToInsert.Email = elem.Email
+		restaurantToInsert.Role = elem.Role
+		restaurantToInsert.Phone = elem.Phone
+		restaurantToInsert.Address = elem.Address
 
-		log.Println(result.InsertedID.(primitive.ObjectID))
+		log.Println("Restaurant Beffore Inserting:  ", restaurantToInsert)
+
+		result, _ := restaurantsColl.InsertOne(ctx, restaurantToInsert)
+
+		// log.Println(result.InsertedID.(primitive.ObjectID))
 
 		newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID.(primitive.ObjectID)}
-		resultedUseer, err := usersColl.InsertOne(ctx, newUser)
+		resultedUser, err := usersColl.InsertOne(ctx, newUser)
 		if err != nil {
 			log.Println(err.Error())
 
 		}
 
-		log.Println("user Added", resultedUseer)
+		log.Println("user Added", resultedUser)
 
 		json.NewEncoder(res).Encode(result)
 
