@@ -7,19 +7,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"os"
-	"restaurant-supplier-api/config"
+	// "restaurant-supplier-api/config"
 	"time"
 )
 
 func CreateConnection() *mongo.Client {
 	// mongo conncetion
 	var mongoURI string
-	if os.Getenv("URI") != "" {
-		mongoURI = os.Getenv("URI")
-	} else {
-		config.GetMongoUrl()
+	// if os.Getenv("URI") != "" {
+	mongoURI = os.Getenv("URI")
 
-	}
+	// }
+
+	// } else {
+	// 	config.GetMongoUrl()
+
+	// }
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 
