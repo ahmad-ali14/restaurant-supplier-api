@@ -2,7 +2,7 @@ package main
 
 import (
 	// "context"
-	"fmt"
+	// "fmt"
 	"github.com/gorilla/mux"
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
@@ -16,39 +16,13 @@ import (
 	"restaurant-supplier-api/httpd/restaurantHandler"
 	"restaurant-supplier-api/httpd/supplierHandler"
 	// "restaurant-supplier-api/utils/dbHandler"
-	jwt "github.com/dgrijalva/jwt-go"
+	// jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/handlers"
 	// "time"
 	"os"
 )
 
-var mySigningKey = []byte("captainjacksparrowsayshi")
-
-func isAuthorized(endpoint func(http.ResponseWriter, *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		if r.Header["Token"] != nil {
-
-			token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("There was an error")
-				}
-				return mySigningKey, nil
-			})
-
-			if err != nil {
-				fmt.Fprintf(w, err.Error())
-			}
-
-			if token.Valid {
-				endpoint(w, r)
-			}
-		} else {
-
-			fmt.Fprintf(w, "Not Authorized")
-		}
-	})
-}
+// var mySigningKey = []byte("captainjacksparrowsayshi")
 
 func main() {
 
@@ -75,7 +49,7 @@ func main() {
 	// retaurant sub router funcs
 	router.Handle("/", restaurantRouter)
 	restaurantRouter.HandleFunc("/", restaurantHandler.Info).Methods("GET")
-	restaurantRouter.Handle("/all", isAuthorized(restaurantHandler.GetAllRestaurants)).Methods("GET", "OPTIONS")
+	restaurantRouter.Handle("/all", auth.IsAuthorized(restaurantHandler.GetAllRestaurants)).Methods("GET", "OPTIONS")
 	restaurantRouter.HandleFunc("/new", restaurantHandler.CreateRestaurant).Methods("POST")
 
 	// supplier sub router funcs
