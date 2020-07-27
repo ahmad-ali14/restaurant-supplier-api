@@ -31,12 +31,16 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 
 	// generate token
-	token, err := GenerateJWT()
+	token, tokenErr := GenerateJWT()
+
+	if tokenErr != nil {
+		log.Println(tokenErr)
+	}
 
 	// if wrong with token generation
-	if err != nil {
+	if tokenErr != nil {
 		res.WriteHeader(http.StatusInternalServerError)
-		res.Write([]byte(`{ "message": "` + err.Error() + `" }`))
+		res.Write([]byte(`{ "message": "` + tokenErr.Error() + `" }`))
 		return
 	}
 
@@ -49,36 +53,48 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	_ = json.NewDecoder(req.Body).Decode(&userAskingLogin)
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 
-	err = usersColl.FindOne(ctx, bson.D{
+	findUserErr := usersColl.FindOne(ctx, bson.D{
 		{"email", userAskingLogin.Email},
 	}).Decode(&foundUser)
 
 	log.Println("user Asked Loging:  ", userAskingLogin)
 	log.Println("found user:  ", foundUser)
 
-	if err != nil {
+	if findUserErr != nil {
 		res.WriteHeader(http.StatusInternalServerError)
-		// res.Write([]byte(`{ "message": "` + err + `" }`))
-		log.Println(err)
+		res.Write([]byte(`{ "message": "` + findUserErr.Error() + `" }`))
+		log.Println(findUserErr)
 		return
 	}
 
 	//userAskingLogin.Password, _ = HashPassword(userAskingLogin.Password)
 
 	if CheckPasswordHash(userAskingLogin.Password, foundUser.Password) {
-
+		var accountErr interface{}
 		// grap user account
 		if foundUser.Role == "restaurant" {
 			// var userAccount restaurant.Restaurant
-			err = restaurantsColl.FindOne(ctx, bson.D{{"_id", foundUser.UserId}}).Decode(&userAccount)
+			accountErr = restaurantsColl.FindOne(ctx, bson.D{{"_id", foundUser.UserId}}).Decode(&userAccount)
 		}
 		if foundUser.Role == "supplier" {
 			// var userAccount supplier.Supplier
-			err = suppliersColl.FindOne(ctx, bson.D{{"_id", foundUser.UserId}}).Decode(&userAccount)
+			accountErr = suppliersColl.FindOne(ctx, bson.D{{"_id", foundUser.UserId}}).Decode(&userAccount)
 
 		}
 
-		json.NewEncoder(res).Encode(map[string]interface{}{"token": token, "role": foundUser.Role, "userId": foundUser.UserId, "userAccount": userAccount})
+		if accountErr != nil {
+			log.Println(accountErr)
+		}
+		if token == "" {
+			json.NewEncoder(res).Encode(map[string]string{"Error": "Token is Worng"})
+			return
+		}
+
+		var results = map[string]interface{}{"token": token, "role": foundUser.Role, "userId": foundUser.UserId, "userAccount": userAccount}
+
+		log.Println(results)
+
+		json.NewEncoder(res).Encode(results)
 
 	} else {
 		json.NewEncoder(res).Encode(map[string]string{"Error": "wrong Email or Password"})
