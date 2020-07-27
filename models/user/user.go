@@ -9,5 +9,5 @@ type User struct {
 	Email    string             `bson:"emial,omitempty" json:"emial,omitempty"`
 	Password string             `bson:"password,omitempty" json:"password,omitempty"`
 	Role     string             `bson:"role,omitempty" json:"role,omitempty"`
-	UserId   primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserId   primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"`
 }

@@ -9,11 +9,14 @@ import (
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
 	// "go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"restaurant-supplier-api/httpd/auth"
 	"restaurant-supplier-api/models/restaurant"
 	"restaurant-supplier-api/models/user"
 	"restaurant-supplier-api/utils/dbHandler"
 	"restaurant-supplier-api/utils/enCors"
+
 	"time"
 )
 
@@ -80,11 +83,23 @@ func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 	var newUser user.User
 	_ = json.NewDecoder(req.Body).Decode(&elem)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	elem.Password, _ = auth.HashPassword(elem.Password)
+
+	log.Println(elem)
+
 	result, _ := restaurantsColl.InsertOne(ctx, elem)
 
-	log.Println(result.InsertedID)
+	log.Println(result.InsertedID.(primitive.ObjectID))
 
-	newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID}
-	_, _ = usersColl.InsertOne(ctx, newUser)
+	newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID.(primitive.ObjectID)}
+	resultedUseer, err := usersColl.InsertOne(ctx, newUser)
+	if err != nil {
+		log.Println(err.Error())
+
+	}
+
+	log.Println("user Added", resultedUseer)
+
 	json.NewEncoder(res).Encode(result)
 }
