@@ -42,16 +42,8 @@ func Info(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetAllRestaurants(res http.ResponseWriter, req *http.Request) {
-	// enCors.EnableCors(res)
 
 	res.Header().Set("Content-Type", "application/json")
-	res.Header().Set("Access-Control-Allow-Origin", "*")
-	res.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	res.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,  Accept-Language, YourOwnHeader")
-
-	if (*req).Method == "OPTIONS" {
-		return
-	}
 
 	var results []restaurant.Restaurant
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
@@ -79,27 +71,40 @@ func GetAllRestaurants(res http.ResponseWriter, req *http.Request) {
 
 func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 	enCors.EnableCors(res)
+
 	var elem restaurant.Restaurant
 	var newUser user.User
+	var existedUser interface{}
 	_ = json.NewDecoder(req.Body).Decode(&elem)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
-	elem.Password, _ = auth.HashPassword(elem.Password)
+	_ = usersColl.FindOne(ctx, bson.D{
+		{"email", elem.Email},
+	}).Decode(&existedUser)
 
-	log.Println(elem)
+	if existedUser == nil {
+		elem.Password, _ = auth.HashPassword(elem.Password)
 
-	result, _ := restaurantsColl.InsertOne(ctx, elem)
+		log.Println(elem)
 
-	log.Println(result.InsertedID.(primitive.ObjectID))
+		result, _ := restaurantsColl.InsertOne(ctx, elem)
 
-	newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID.(primitive.ObjectID)}
-	resultedUseer, err := usersColl.InsertOne(ctx, newUser)
-	if err != nil {
-		log.Println(err.Error())
+		log.Println(result.InsertedID.(primitive.ObjectID))
+
+		newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID.(primitive.ObjectID)}
+		resultedUseer, err := usersColl.InsertOne(ctx, newUser)
+		if err != nil {
+			log.Println(err.Error())
+
+		}
+
+		log.Println("user Added", resultedUseer)
+
+		json.NewEncoder(res).Encode(result)
+
+	} else {
+		json.NewEncoder(res).Encode(map[string]string{"Error": "email existed, go to login"})
 
 	}
 
-	log.Println("user Added", resultedUseer)
-
-	json.NewEncoder(res).Encode(result)
 }
