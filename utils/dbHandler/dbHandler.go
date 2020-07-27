@@ -6,16 +6,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"os"
-	// "restaurant-supplier-api/config"
+	// "os"
+	"restaurant-supplier-api/config"
 	"time"
 )
 
 func CreateConnection() *mongo.Client {
 	// mongo conncetion
-	var mongoURI string
+	var mongoURI string = config.GetMongoUrl()
 	// if os.Getenv("URI") != "" {
-	mongoURI = os.Getenv("URI")
+	// mongoURI = os.Getenv("URI")
 
 	// }
 
