@@ -8,7 +8,9 @@ the api is live on: https://restaurant-supplier-api--ahmadali5.repl.co/
 
 live with the front end: https://restaurant-supplier.netlify.app/
 
-### Info
+## Info
+- `mongodb Atlas` for storing data, `go` as a language, `reple.it` for deployment.
+- since this is my first attempt with `go`, files and packages names camelcased, this may cause you probrlems with linux based os, but it's fine with windows. 
 - 4 modules for data `users, restaurants, suppliers, orders`
 - users : stores authentication data from both restaurants and suppliers.
 - orders: stores orders data with their status, messages.
