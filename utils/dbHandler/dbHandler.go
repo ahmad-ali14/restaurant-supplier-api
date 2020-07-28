@@ -6,23 +6,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	// "os"
-	"restaurant-supplier-api/config"
+	"os"
+	//"restaurant-supplier-api/config"
 	"time"
 )
 
 func CreateConnection() *mongo.Client {
 	// mongo conncetion
-	var mongoURI string = config.GetMongoUrl()
-	// if os.Getenv("URI") != "" {
-	// mongoURI = os.Getenv("URI")
+	//var mongoURI string = config.GetMongoUrl()
+	var mongoURI string
+	if os.Getenv("URI") != "" {
+		mongoURI = os.Getenv("URI")
+	} else {
+		// mongoURI =	config.GetMongoUrl()
 
-	// }
+	}
 
-	// } else {
-	// 	config.GetMongoUrl()
-
-	// }
+	// if mongoURI != "" {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 
@@ -42,9 +42,7 @@ func CreateConnection() *mongo.Client {
 	// fmt.Printf("ctx is %s", ctx)
 
 	return client
-
 }
-
 func AddItemToDb() string {
 	return "Added"
 }
