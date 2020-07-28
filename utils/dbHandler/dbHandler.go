@@ -14,15 +14,15 @@ import (
 func CreateConnection() *mongo.Client {
 	// mongo conncetion
 	//var mongoURI string = config.GetMongoUrl()
-  var mongoURI string
-	 if os.Getenv("URI") != "" {
-	mongoURI = os.Getenv("URI")
-   } else {
-	// mongoURI =	config.GetMongoUrl()
+	var mongoURI string
+	if os.Getenv("URI") != "" {
+		mongoURI = os.Getenv("URI")
+	} else {
+		// mongoURI =	config.GetMongoUrl()
 
-	 }
+	}
 
-  // if mongoURI != "" {
+	// if mongoURI != "" {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 
