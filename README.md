@@ -8,7 +8,36 @@ the api is live on: https://restaurant-supplier-api--ahmadali5.repl.co/
 
 live with the front end: https://restaurant-supplier.netlify.app/
 
-## Test it 
+## Test it
+
+- the main route is not guarded and ots response is public:
+
+```json
+  {
+  "_welcome ": {
+  "info": "resturant-supplier-api endpoints by Ahmad Ali"
+  },
+  "route / ": {
+  "Available Methods": "GET only",
+  "more info": "no authentication yet",
+  "this endpoint": "will give you more info about the Available routes by this api"
+  },
+  "route /order ": {
+  "Available Methods": "CRUD",
+  "this endpoint": "CRUD on orders"
+  },
+  "route /restaurant ": {
+  "Available Methods": "CRUD",
+  "this endpoint": "CRUD on restaurnts"
+  },
+  "route /supplier ": {
+  "Available Methods": "CRUD",
+  "this endpoint": "CRUD on suppliers"
+  }
+  }
+```
+
+## Test it As Restaurant
 
 1. make post request to: https://restaurant-supplier-api--ahmadali5.repl.co/login with body:
   ```json
@@ -38,10 +67,6 @@ live with the front end: https://restaurant-supplier.netlify.app/
             "Value": "nw"
         },
         {
-            "Key": "password",
-            "Value": "$2a$14$YqfqDPQ3r59RRtzjG4iwReizQlDDhZkx2oIiTJRXcngvx6fFvpXCC"
-        },
-        {
             "Key": "email",
             "Value": "mc@london.uk"
         },
@@ -57,8 +82,88 @@ live with the front end: https://restaurant-supplier.netlify.app/
 2. add a new header called `Token` to your request so you will be authorized.
 
 
+## Test it As Supplier
 
-## Env Files
+1. make post request to: https://restaurant-supplier-api--ahmadali5.repl.co/login with body:
+  ```json
+  {
+    "email":"mc3@london.uk",
+    "password":"lodon"
+  }
+  ```
+  
+  and you will get this result:
+  
+  ```json
+   {
+    "role": "supplier",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJjbGllbnQiOiJFbGxpb3QgRm9yYmVzIiwiZXhwIjoxNTk3MDE4OTM0fQ.Up8sKj6RF5OSjam1KCFWTAiSmp_a0BKKujeiyGeHFCs",
+    "userAccount": [
+        {
+            "Key": "_id",
+            "Value": "5f1f3ee4cfedf9af9b6bdd08"
+        },
+        {
+            "Key": "email",
+            "Value": "mc3@london.uk"
+        },
+        {
+            "Key": "address",
+            "Value": "mc1"
+        },
+        {
+            "Key": "phone",
+            "Value": "+123435"
+        },
+        {
+            "Key": "role",
+            "Value": "supplier"
+        },
+        {
+            "Key": "products",
+            "Value": [
+                [
+                    {
+                        "Key": "productName",
+                        "Value": "pr 1"
+                    },
+                    {
+                        "Key": "productPrice",
+                        "Value": "1"
+                    }
+                ],
+                [
+                    {
+                        "Key": "productName",
+                        "Value": "pr 2"
+                    },
+                    {
+                        "Key": "productPrice",
+                        "Value": "2"
+                    }
+                ],
+                [
+                    {
+                        "Key": "productName",
+                        "Value": "pr 3"
+                    },
+                    {
+                        "Key": "productPrice",
+                        "Value": "3"
+                    }
+                ]
+            ]
+        }
+    ],
+    "userId": "5f1f3ee4cfedf9af9b6bdd08"
+}
+```
+
+2. add a new header called `Token` to your request so you will be authorized.
+
+
+
+## Test Locally
 
 - make a `./config/config.go` file
 - put this code in that file:
