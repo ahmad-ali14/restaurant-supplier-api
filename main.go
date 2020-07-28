@@ -11,9 +11,9 @@ import (
 	"net/http"
 	// "restaurant-supplier-api/config"
 	"restaurant-supplier-api/httpd/auth"
-	"restaurant-supplier-api/httpd/mainPageHandler"
+	"restaurant-supplier-api/httpd/main_page_handler"
 	"restaurant-supplier-api/httpd/orderHandler"
-	"restaurant-supplier-api/httpd/restaurantHandler"
+	"restaurant-supplier-api/httpd/restaurant_handler"
 	"restaurant-supplier-api/httpd/supplierHandler"
 	// "restaurant-supplier-api/utils/dbHandler"
 	// jwt "github.com/dgrijalva/jwt-go"
@@ -43,14 +43,14 @@ func main() {
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// handler funcs
-	router.HandleFunc("/", mainPageHandler.Info).Methods("GET")
+	router.HandleFunc("/",main_page_handler.Info).Methods("GET")
 	router.HandleFunc("/login", auth.Login).Methods("POST")
 
 	// retaurant sub router funcs
 	router.Handle("/", restaurantRouter)
-	restaurantRouter.HandleFunc("/", restaurantHandler.Info).Methods("GET")
-	restaurantRouter.Handle("/all", auth.IsAuthorized(restaurantHandler.GetAllRestaurants)).Methods("GET", "OPTIONS")
-	restaurantRouter.HandleFunc("/new", restaurantHandler.CreateRestaurant).Methods("POST")
+	restaurantRouter.HandleFunc("/", restaurant_handler.Info).Methods("GET")
+	restaurantRouter.Handle("/all", auth.IsAuthorized(restaurant_handler.GetAllRestaurants)).Methods("GET", "OPTIONS")
+	restaurantRouter.HandleFunc("/new", restaurant_handler.CreateRestaurant).Methods("POST")
 
 	// supplier sub router funcs
 	router.Handle("/", supplierRouter)

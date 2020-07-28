@@ -1,4 +1,4 @@
-package mainPageHandler
+package main_page_handler
 
 import (
 	"encoding/json"

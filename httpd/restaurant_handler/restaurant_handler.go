@@ -1,4 +1,4 @@
-package restaurantHandler
+package restaurant_handler
 
 import (
 	"context"
