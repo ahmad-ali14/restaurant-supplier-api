@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	// "fmt"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
 	// "go.mongodb.org/mongo-driver/mongo"
+	"log"
 	// "go.mongodb.org/mongo-driver/mongo/options"
 	// "go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -78,9 +78,9 @@ func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 	var restaurantToInsert restaurant.Restaurant
 
 	_ = json.NewDecoder(req.Body).Decode(&elem)
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
 
-	_ = usersColl.FindOne(ctx, bson.D{
+	_ = usersColl.FindOne(context.TODO(), bson.D{
 		{"email", elem.Email},
 	}).Decode(&existedUser)
 
@@ -98,9 +98,11 @@ func CreateRestaurant(res http.ResponseWriter, req *http.Request) {
 
 		log.Println("Restaurant Beffore Inserting:  ", restaurantToInsert)
 
-		result, _ := restaurantsColl.InsertOne(ctx, restaurantToInsert)
+		result, _ := restaurantsColl.InsertOne(context.TODO(), restaurantToInsert)
 
-		// log.Println(result.InsertedID.(primitive.ObjectID))
+		//time.Sleep(3 * time.Second)
+
+		log.Println("Id inserted restaurant", result.InsertedID.(primitive.ObjectID))
 
 		newUser = user.User{Email: elem.Email, Password: elem.Password, Role: elem.Role, UserId: result.InsertedID.(primitive.ObjectID)}
 		resultedUser, err := usersColl.InsertOne(ctx, newUser)
