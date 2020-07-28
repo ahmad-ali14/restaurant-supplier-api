@@ -8,6 +8,13 @@ the api is live on: https://restaurant-supplier-api--ahmadali5.repl.co/
 
 live with the front end: https://restaurant-supplier.netlify.app/
 
+### Info
+- 4 modules for data `users, restaurants, suppliers, orders`
+- users : stores authentication data from both restaurants and suppliers.
+- orders: stores orders data with their status, messages.
+- Not much actions done with orders yet.
+
+
 ## Test it
 
 - the main route is not guarded and ots response is public:
