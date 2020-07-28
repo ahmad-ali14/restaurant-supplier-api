@@ -5,15 +5,15 @@ import (
 )
 
 type Order struct {
-	ID              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	From_Restaurant string             `bson:"restaurantId,omitempty" json:"restaurantId,omitempty"`
-	To_Supplier     string             `bson:"supplierId,omitempty" json:"supplierId,omitempty"`
-	Status          string             `bson:"status,omitempty" json:"status,omitempty"`
-	Value           float64            `bson:"value,omitempty" json:"value,omitempty"`
-	Comments        []*Comment         `bson:"comments,omitempty" json:"comments,omitempty"`
+	ID              primitive.ObjectID `json:"_id" bson:"_id"`
+	From_Restaurant string             `bson:"restaurantId" json:"restaurantId"`
+	To_Supplier     string             `bson:"supplierId" json:"supplierId"`
+	Status          string             `bson:"status" json:"status"`
+	Value           float64            `bson:"value" json:"value"`
+	Comments        []*Comment         `bson:"comments" json:"comments"`
 }
 
 type Comment struct {
-	From    string `bson:"password,omitempty" json:"password,omitempty"`
-	Message string `bson:"password,omitempty" json:"password,omitempty"`
+	From    string `bson:"from" json:"from"`
+	Message string `bson:"message" json:"message"`
 }

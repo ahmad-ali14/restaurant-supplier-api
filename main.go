@@ -55,10 +55,15 @@ func main() {
 	// supplier sub router funcs
 	router.Handle("/", supplierRouter)
 	supplierRouter.HandleFunc("/", supplierHandler.Info).Methods("GET")
+	supplierRouter.Handle("/all", auth.IsAuthorized(supplierHandler.GetAllSuppliers)).Methods("GET", "OPTIONS")
+	supplierRouter.HandleFunc("/new", supplierHandler.CreateSupplier).Methods("POST")
 
 	// router sub router funcs
 	router.Handle("/", orderRouter)
 	orderRouter.HandleFunc("/", orderHandler.Info).Methods("GET")
+	orderRouter.Handle("/all", auth.IsAuthorized(orderHandler.GetAllOrders)).Methods("GET", "OPTIONS")
+	orderRouter.Handle("/new", auth.IsAuthorized(orderHandler.CreateOrder)).Methods("POST")
+	orderRouter.Handle("/my-orders/{id}", auth.IsAuthorized(orderHandler.GetMyOrders)).Methods("GET")
 
 	// run the server
 	var port string = "5000"
