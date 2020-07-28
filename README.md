@@ -184,7 +184,16 @@ live with the front end: https://restaurant-supplier.netlify.app/
           return "<your mongodb connection string>"
         }
 
+
   ```
+  
+  
+## Debugging
+
+if you face this error: 
+![](https://i.imgur.com/wWSwGUT.png)
+this means that your connection to db taking too long, just increase the context time of your connection.
+
 
   ## live
   [![Run on Repl.it](https://repl.it/badge/github/ahmad-ali14/restaurant-supplier-api)](https://repl.it/github/ahmad-ali14/restaurant-supplier-api)
